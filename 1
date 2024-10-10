@@ -1,0 +1,48 @@
+# Define a comprehensive list of essential apps to keep enabled
+$essentialApps = @(
+    "Microsoft.WindowsStore",                  # Windows Store
+    "Microsoft.Windows.Photos",                 # Photos App
+    "Microsoft.Windows.ShellExperienceHost",    # Shell Experience Host
+    "Microsoft.WindowsCalculator",               # Calculator
+    "Microsoft.GetHelp",                        # Get Help
+    "Microsoft.MicrosoftEdge",                  # Microsoft Edge
+    "Microsoft.WindowsCamera",                  # Camera
+    "Microsoft.BingWeather",                    # Weather App
+    "Microsoft.XboxApp",                        # Xbox Game Bar
+    "Microsoft.MicrosoftOfficeHub",             # Office Hub
+    "Microsoft.SkypeApp",                       # Skype
+    "Microsoft.OneDrive",                       # OneDrive
+    "Microsoft.YourPhone",                      # Your Phone App
+    "Microsoft.BingNews",                       # News
+    "Microsoft.WindowsSoundRecorder",           # Voice Recorder
+    "Microsoft.DesktopAppInstaller",            # App Installer
+    "Microsoft.WindowsFeedbackHub",             # Feedback Hub
+    "Microsoft.MicrosoftSolitaireCollection",   # Solitaire
+    "Microsoft.WindowsMaps",                    # Maps
+    "Microsoft.MicrosoftStickyNotes",           # Sticky Notes
+    "Microsoft.AppConnector"                    # App Connector
+)
+
+# Get all installed background apps
+$allApps = Get-AppxPackage | Where-Object { $_.IsFramework -eq $false }
+
+# Inform user about the process
+Write-Host "Checking installed background apps..."
+
+# Loop through all installed apps to check and disable non-essential ones
+foreach ($app in $allApps) {
+    if ($app.PackageFamilyName -notin $essentialApps) {
+        # Attempt to stop the process for non-essential apps
+        try {
+            Stop-Process -Name $app.Name -ErrorAction SilentlyContinue
+            Write-Host "Stopped background activity for: $($app.Name)"
+        } catch {
+            Write-Host "Failed to stop background activity for: $($app.Name). Error: $_"
+        }
+    } else {
+        Write-Host "Keeping essential app enabled: $($app.Name)"
+    }
+}
+
+# Inform user of completion
+Write-Host "Background app activity has been updated. Please review the changes."
